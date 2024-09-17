@@ -1,0 +1,11 @@
+Model Information:
+* title:	NASA's 3d Rover
+* source:	https://sketchfab.com/3d-models/nasas-3d-rover-d915dc6de3914ad78235b4c69df65f94
+* author:	aods (https://sketchfab.com/aods)
+
+Model License:
+* license type:	CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)
+* requirements:	Author must be credited. Modified versions must have the same license. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "NASA's 3d Rover" (https://sketchfab.com/3d-models/nasas-3d-rover-d915dc6de3914ad78235b4c69df65f94) by aods (https://sketchfab.com/aods) licensed under CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)

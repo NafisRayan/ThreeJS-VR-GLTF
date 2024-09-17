@@ -1,0 +1,11 @@
+Model Information:
+* title:	Solar Skid
+* source:	https://sketchfab.com/3d-models/solar-skid-c362f7173a06404cab2dd49e35cdf56e
+* author:	ismadi (https://sketchfab.com/abgnokia)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Solar Skid" (https://sketchfab.com/3d-models/solar-skid-c362f7173a06404cab2dd49e35cdf56e) by ismadi (https://sketchfab.com/abgnokia) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

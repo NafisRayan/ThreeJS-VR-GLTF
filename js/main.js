@@ -1,99 +1,83 @@
-//Import the THREE.js library
+// Import the THREE.js library
 import * as THREE from "https://cdn.skypack.dev/three@0.129.0/build/three.module.js";
-// To allow for the camera to move around the scene
+// Import OrbitControls for camera movement
 import { OrbitControls } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/controls/OrbitControls.js";
-// To allow for importing the .gltf file
+// Import GLTFLoader for loading .gltf models
 import { GLTFLoader } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/GLTFLoader.js";
 
-//Create a Three.JS Scene
+// Create a new Three.js scene
 const scene = new THREE.Scene();
-//create a new camera with positions and angles
+
+// Set up a Perspective Camera with field of view, aspect ratio, and clipping planes
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.z = 5; // Set the camera's z position to see the model
 
-//Keep track of the mouse position, so we can make the eye move
-let mouseX = window.innerWidth / 2;
-let mouseY = window.innerHeight / 2;
+// Create a WebGL renderer with transparency enabled
+const renderer = new THREE.WebGLRenderer({ alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight); // Set the renderer size
+document.body.appendChild(renderer.domElement); // Add the renderer to the DOM
 
-//Keep the 3D object on a global variable so we can access it later
-let object;
+// Instantiate OrbitControls for camera movement
+const controls = new OrbitControls(camera, renderer.domElement);
 
-//OrbitControls allow the camera to move around the scene
-let controls;
+let gltfFolder = 'curiosity_rover'
+let model; // Declare model variable globally
 
-//Set which object to render
-let objToRender = 'curiosity_rover';
-
-//Instantiate a loader for the .gltf file
+// Load the .gltf model using GLTFLoader
 const loader = new GLTFLoader();
-
-//Load the file
 loader.load(
-  `models/${objToRender}/scene.gltf`,
+  `models/${gltfFolder}/scene.gltf`,
   function (gltf) {
-    //If the file is loaded, add it to the scene
-    object = gltf.scene;
-    scene.add(object);
+    model = gltf.scene; // Assign the loaded model to the global model variable
+    
+    // Play animations
+    if (model.animations) {
+      model.mixer = new THREE.AnimationMixer(model);
+      model.mixer.clipAction(gltf.animations[0]).play();
+    }
+    
+    model.scale.set(1, 1, 1); // Optional: Set the scale of the model
+    scene.add(model); // Add the model to the scene
   },
-  function (xhr) {
-    //While it is loading, log the progress
-    console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-  },
+  undefined,
   function (error) {
-    //If there is an error, log it
-    console.error(error);
+    console.error('An error occurred while loading the model:', error);
   }
 );
 
-//Instantiate a new renderer and set its size
-const renderer = new THREE.WebGLRenderer({ alpha: true }); //Alpha: true allows for the transparent background
-renderer.setSize(window.innerWidth, window.innerHeight);
-
-//Add the renderer to the DOM
-document.getElementById("container3D").appendChild(renderer.domElement);
-
-//Set how far the camera will be from the 3D model
-camera.position.z = objToRender === "curiosity_rover" ? 25 : 500;
-
-//Add lights to the scene, so we can actually see the 3D model
-const topLight = new THREE.DirectionalLight(0xffffff, 1); // (color, intensity)
-topLight.position.set(500, 500, 500) //top-left-ish
-topLight.castShadow = true;
-scene.add(topLight);
-
-const ambientLight = new THREE.AmbientLight(0x333333, objToRender === "curiosity_rover" ? 5 : 1);
+// Add ambient lighting to the scene
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLight);
 
-//This adds controls to the camera, so we can rotate / zoom it with the mouse
-if (objToRender === "curiosity_rover") {
-  controls = new OrbitControls(camera, renderer.domElement);
-}
+// Add a directional light for more lighting effects
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(5, 5, 5); // Position the light
+scene.add(directionalLight);
 
-//Render the scene
-function animate() {
-  requestAnimationFrame(animate);
-  //Here we could add some code to update the scene, adding some automatic movement
-
-  //Make the eye move
-  if (object && objToRender === "eye") {
-    //I've played with the constants here until it looked good 
-    object.rotation.y = -3 + mouseX / window.innerWidth * 3;
-    object.rotation.x = -1.2 + mouseY * 2.5 / window.innerHeight;
-  }
-  renderer.render(scene, camera);
-}
-
-//Add a listener to the window, so we can resize the window and the camera
-window.addEventListener("resize", function () {
-  camera.aspect = window.innerWidth / window.innerHeight;
+// Handle window resizing
+window.addEventListener('resize', function () {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  
+  // Update camera aspect ratio and renderer size
+  camera.aspect = width / height;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(width, height);
 });
 
-//add mouse position listener, so we can make the eye move
-document.onmousemove = (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
+// Animation loop to render the scene
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update(); // Update camera controls
+  
+  // Update animations
+  if (model && model.mixer) {
+    model.mixer.update(0.016); // Update animation mixer
+  }
+  
+  renderer.render(scene, camera); // Render the scene with the camera
 }
+animate();
 
-//Start the 3D rendering
+// Start the rendering loop
 animate();
