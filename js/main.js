@@ -1,3 +1,4 @@
+
 // Import the THREE.js library
 import * as THREE from "https://cdn.skypack.dev/three@0.129.0/build/three.module.js";
 // Import OrbitControls for camera movement
@@ -22,14 +23,14 @@ const controls = new OrbitControls(camera, renderer.domElement);
 
 // GLTF model folders
 const modelsFolders = [
-  { folder: 'curiosity_rover', scale: [1, 1, 1], position: [5, 0.4, -7] },
-  { folder: 'astronaut', scale: [1.2, 1.2, 1.2], position: [-3, -1, -15] },
-  { folder: 'perseverance_mars_rover', scale: [1, 1, 1], position: [-7, 0, -5] },
-  { folder: 'mariner_4_spacecraft', scale: [1, 1, 1], position: [8, 18, -40] },
-  { folder: 'space_shuttle', scale: [.3, .3, .3], position: [-10, 2, -28] },
-  { folder: 'robot_from_the_series_love_death_and_robots', scale: [.1, .1, .1], position: [5, 0.5, 0] },
-  { folder: 'planet_earth', scale: [3, 3, 3], position: [25, 18, -100] },
-  { folder: 'planet', scale: [.002, .002, .002], position: [-10, 18, -50] },
+  { folder: 'curiosity_rover', scale: [1, 1, 1], position: [5, 0.4, -7], rotation: [0, Math.PI, 0], animation: true },
+  { folder: 'astronaut', scale: [1.2, 1.2, 1.2], position: [-3, -1, -15], rotation: [0, Math.PI, 0], animation: true },
+  { folder: 'perseverance_mars_rover', scale: [1, 1, 1], position: [-7, 0, -5], rotation: [0, Math.PI, 0], animation: false },
+  { folder: 'mariner_4_spacecraft', scale: [1, 1, 1], position: [8, 18, -40], rotation: [0, Math.PI, 0], animation: false },
+  { folder: 'space_shuttle', scale: [.3, .3, .3], position: [-10, 2, -28], rotation: [0, Math.PI, 0], animation: false },
+  { folder: 'robot_from_the_series_love_death_and_robots', scale: [.1, .1, .1], position: [5, 0.5, 0], rotation: [0, 20, 0], animation: false },
+  { folder: 'planet_earth', scale: [3, 3, 3], position: [25, 18, -100], rotation: [0, Math.PI, 0], animation: false },
+  { folder: 'planet', scale: [.002, .002, .002], position: [-10, 18, -50], rotation: [0, Math.PI, 0], animation: false },
 ];
 
 let models = []; // Array to store loaded models
@@ -43,10 +44,22 @@ modelsFolders.forEach((modelData, index) => {
       const model = gltf.scene;
 
       // Play animations if available
-      if (gltf.animations.length > 0) {
+      // if (gltf.animations.length > 0) {
+      //   model.mixer = new THREE.AnimationMixer(model);
+      //   model.mixer.clipAction(gltf.animations[0]).play();
+      //   model.rotation.set(...(modelData.rotation || [0, 0, 0]));  // Default rotation if none provided
+      // }
+      if (modelData.animation) {
         model.mixer = new THREE.AnimationMixer(model);
         model.mixer.clipAction(gltf.animations[0]).play();
+      } else {
+        // Stop existing animations if any
+        if (model.mixer) {
+          model.mixer.stopAllActions();
+          model.mixer = null;
+        }
       }
+
 
       // Set scale and position of each model
       model.scale.set(...modelData.scale);
