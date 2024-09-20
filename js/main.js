@@ -10,7 +10,7 @@ const scene = new THREE.Scene();
 
 // Set up a Perspective Camera with field of view, aspect ratio, and clipping planes
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.z = 5; // Set the camera's z position to see the model
+camera.position.z = 10; // Set the camera's z position to see the models
 
 // Create a WebGL renderer with transparency enabled
 const renderer = new THREE.WebGLRenderer({ alpha: true });
@@ -20,30 +20,48 @@ document.body.appendChild(renderer.domElement); // Add the renderer to the DOM
 // Instantiate OrbitControls for camera movement
 const controls = new OrbitControls(camera, renderer.domElement);
 
-let gltfFolder = 'curiosity_rover'
-let model; // Declare model variable globally
+// GLTF model folders
+const modelsFolders = [
+  { folder: 'curiosity_rover', scale: [1, 1, 1], position: [5, 0.4, -7] },
+  { folder: 'astronaut', scale: [1.2, 1.2, 1.2], position: [-3, -1, -15] },
+  { folder: 'perseverance_mars_rover', scale: [1, 1, 1], position: [-7, 0, -5] },
+  { folder: 'mariner_4_spacecraft', scale: [1, 1, 1], position: [8, 18, -40] },
+  { folder: 'space_shuttle', scale: [.3, .3, .3], position: [-10, 2, -28] },
+  { folder: 'robot_from_the_series_love_death_and_robots', scale: [.1, .1, .1], position: [5, 0.5, 0] },
+  { folder: 'planet_earth', scale: [3, 3, 3], position: [25, 18, -100] },
+  { folder: 'planet', scale: [.002, .002, .002], position: [-10, 18, -50] },
+];
 
-// Load the .gltf model using GLTFLoader
+let models = []; // Array to store loaded models
+
+// Load multiple .gltf models using GLTFLoader
 const loader = new GLTFLoader();
-loader.load(
-  `models/${gltfFolder}/scene.gltf`,
-  function (gltf) {
-    model = gltf.scene; // Assign the loaded model to the global model variable
-    
-    // Play animations
-    if (model.animations) {
-      model.mixer = new THREE.AnimationMixer(model);
-      model.mixer.clipAction(gltf.animations[0]).play();
+modelsFolders.forEach((modelData, index) => {
+  loader.load(
+    `models/${modelData.folder}/scene.gltf`,
+    function (gltf) {
+      const model = gltf.scene;
+
+      // Play animations if available
+      if (gltf.animations.length > 0) {
+        model.mixer = new THREE.AnimationMixer(model);
+        model.mixer.clipAction(gltf.animations[0]).play();
+      }
+
+      // Set scale and position of each model
+      model.scale.set(...modelData.scale);
+      model.position.set(...modelData.position);
+
+      // Add the model to the scene and the array
+      scene.add(model);
+      models.push(model);
+    },
+    undefined,
+    function (error) {
+      console.error(`An error occurred while loading ${modelData.folder}:`, error);
     }
-    
-    model.scale.set(1, 1, 1); // Optional: Set the scale of the model
-    scene.add(model); // Add the model to the scene
-  },
-  undefined,
-  function (error) {
-    console.error('An error occurred while loading the model:', error);
-  }
-);
+  );
+});
 
 // Add ambient lighting to the scene
 const ambientLight = new THREE.AmbientLight(0xffffff, 1);
@@ -70,14 +88,13 @@ function animate() {
   requestAnimationFrame(animate);
   controls.update(); // Update camera controls
   
-  // Update animations
-  if (model && model.mixer) {
-    model.mixer.update(0.016); // Update animation mixer
-  }
+  // Update animations for each model
+  models.forEach((model) => {
+    if (model && model.mixer) {
+      model.mixer.update(0.016); // Update animation mixer
+    }
+  });
   
   renderer.render(scene, camera); // Render the scene with the camera
 }
-animate();
-
-// Start the rendering loop
-animate();
+animate(); // Start the rendering loop
