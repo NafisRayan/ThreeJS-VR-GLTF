@@ -1,4 +1,3 @@
-
 // Import the THREE.js library
 import * as THREE from "https://cdn.skypack.dev/three@0.129.0/build/three.module.js";
 // Import OrbitControls for camera movement
@@ -23,14 +22,19 @@ const controls = new OrbitControls(camera, renderer.domElement);
 
 // GLTF model folders
 const modelsFolders = [
-  { folder: 'curiosity_rover', scale: [1, 1, 1], position: [5, 0.4, -7], rotation: [0, Math.PI, 0], animation: true },
-  { folder: 'astronaut', scale: [1.2, 1.2, 1.2], position: [-3, -1, -15], rotation: [0, Math.PI, 0], animation: true },
-  { folder: 'perseverance_mars_rover', scale: [1, 1, 1], position: [-7, 0, -5], rotation: [0, Math.PI, 0], animation: false },
-  { folder: 'mariner_4_spacecraft', scale: [1, 1, 1], position: [8, 18, -40], rotation: [0, Math.PI, 0], animation: false },
-  { folder: 'space_shuttle', scale: [.3, .3, .3], position: [-10, 2, -28], rotation: [0, Math.PI, 0], animation: false },
-  { folder: 'robot_from_the_series_love_death_and_robots', scale: [.1, .1, .1], position: [5, 0.5, 0], rotation: [0, 20, 0], animation: false },
-  { folder: 'planet_earth', scale: [3, 3, 3], position: [25, 18, -100], rotation: [0, Math.PI, 0], animation: false },
-  { folder: 'planet', scale: [.002, .002, .002], position: [-10, 18, -50], rotation: [0, Math.PI, 0], animation: false },
+  { folder: 'mars_surface_terrain_model', scale: [50, 50, 50], position: [270,85,-500], rotation: [-.04, Math.PI, 0], animation: false },
+  { folder: 'curiosity_rover', scale: [1, 1, 1], position: [5, -3, -5], rotation: [0, Math.PI, 0], animation: true },
+  { folder: 'astronaut', scale: [2, 2, 2], position: [-5, -4.5, -3], rotation: [0, 0, 0], animation: true },
+  { folder: 'perseverance_mars_rover', scale: [1, 1, 1], position: [-11, -3, -5], rotation: [0, Math.PI, 0], animation: false },
+  // { folder: 'mariner_4_spacecraft', scale: [1, 1, 1], position: [8, 18, -40], rotation: [0, Math.PI, 0], animation: false },
+  { folder: 'space_shuttle', scale: [.5,.5,.5], position: [-40,-1, -40], rotation: [0, -90, 0], animation: false },
+  { folder: 'robot_from_the_series_love_death_and_robots', scale: [.2, .2, .2], position: [8,0.-2 , 3], rotation: [0, 110.5, 0], animation: true },
+  { folder: 'planet_earth', scale: [5, 5, 5], position: [25, 18, -100], rotation: [0, Math.PI, 0], animation: false },
+  { folder: 'planet', scale: [.0023, .0023, .0023], position: [-10, 18, -50], rotation: [0, Math.PI, 0], animation: false },
+  { folder: 'solar_skid', scale: [.01,.01,.01], position: [10, -2.3, -5], rotation: [0, 0, 0], animation: false },
+  { folder: 'solar_skid', scale: [.01,.01,.01], position: [10, -2.3, -10], rotation: [0, 0, 0], animation: false },
+  { folder: 'solar_skid', scale: [.01,.01,.01], position: [10, -2.3, -13], rotation: [0, 0, 0], animation: false },
+  { folder: 'solar_skid', scale: [.01,.01,.01], position: [10, -2.3, -8], rotation: [0, 0, 0], animation: false }
 ];
 
 let models = []; // Array to store loaded models
@@ -49,14 +53,17 @@ modelsFolders.forEach((modelData, index) => {
       //   model.mixer.clipAction(gltf.animations[0]).play();
       //   model.rotation.set(...(modelData.rotation || [0, 0, 0]));  // Default rotation if none provided
       // }
+      model.rotation.set(...(modelData.rotation || [0, 0, 0]));  // Default rotation if none provided
       if (modelData.animation) {
         model.mixer = new THREE.AnimationMixer(model);
         model.mixer.clipAction(gltf.animations[0]).play();
+        // model.rotation.set(...(modelData.rotation || [0, 0, 0]));  // Default rotation if none provided
       } else {
         // Stop existing animations if any
         if (model.mixer) {
           model.mixer.stopAllActions();
           model.mixer = null;
+          // model.rotation.set(...(modelData.rotation || [0, 0, 0]));  // Default rotation if none provided
         }
       }
 
